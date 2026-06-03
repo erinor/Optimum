@@ -52,7 +52,6 @@ class OptimizationEngine(
                             }
                         }
 
-                        // FIX: Convert sequence to a List BEFORE iterating so we can call suspend functions safely
                         val rootDir = File(tempWorkDir, "root")
                         if (rootDir.exists()) {
                             val libFolders = rootDir.walkTopDown()

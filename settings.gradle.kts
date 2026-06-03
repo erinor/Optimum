@@ -14,6 +14,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "optimum-r"
+rootProject.name = "apk-optimizer"
 
 include(":app")

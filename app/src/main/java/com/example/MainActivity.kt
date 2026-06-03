@@ -1,5 +1,6 @@
 package com.example
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
@@ -10,12 +11,14 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-// --- GLOBAL MODELS ---
 enum class OptimizationMode {
     FAST,   // In-RAM Binary Modification
     STABLE  // Decompile -> File Sweep -> Recompile
@@ -34,16 +37,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var statusText: TextView
     private lateinit var logText: TextView
-    private lateinit var pickApkButton: Button
-    private lateinit var saveButton: Button
+    private lateinit var pickApkButton: MaterialButton
+    private lateinit var saveButton: MaterialButton
 
-    // Configuration Inputs
-    private lateinit var swInput: EditText
-    private lateinit var dimInput: EditText
-    private lateinit var archInput: EditText
-    private lateinit var langInput: EditText
-    private lateinit var dpiInput: EditText
-    private lateinit var fastRadio: RadioButton
+    private lateinit var inputSmallestWidth: TextInputEditText
+    private lateinit var inputMaxDimen: TextInputEditText
+    private lateinit var inputTargetDpi: Spinner
+    private lateinit var inputCpuArch: Spinner
+    private lateinit var inputKeepLocales: TextInputEditText
+    private lateinit var engineModeGroup: RadioGroup
 
     private var optimizedFile: File? = null
 
@@ -65,56 +67,32 @@ class MainActivity : AppCompatActivity() {
         }
 
         try {
-            setContentView(createLayout())
+            setContentView(R.layout.activity_main)
+            
+            // Find Views
+            statusText = findViewById(R.id.tvStatus)
+            logText = findViewById(R.id.tvLogs)
+            pickApkButton = findViewById(R.id.btnImportApk)
+            saveButton = findViewById(R.id.btnExportApk)
+            inputSmallestWidth = findViewById(R.id.inputSmallestWidth)
+            inputMaxDimen = findViewById(R.id.inputMaxDimen)
+            inputTargetDpi = findViewById(R.id.inputTargetDpi)
+            inputCpuArch = findViewById(R.id.inputCpuArch)
+            inputKeepLocales = findViewById(R.id.inputKeepLocales)
+            engineModeGroup = findViewById(R.id.engineModeGroup)
+
+            setupDefaults()
+
             pickApkButton.setOnClickListener { apkPicker.launch("*/*") }
             saveButton.setOnClickListener { saveLauncher.launch("optimized_app.apk") }
         } catch (e: Throwable) {
             Log.e("OptimumCrash", "Fatal error during onCreate", e)
             val msg = "Startup Crash: ${e.javaClass.simpleName} - ${e.message}"
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-            
-            // Fallback error UI
-            setContentView(TextView(this).apply {
-                text = "$msg\n\n(Check Logcat for the full stack trace)"
-                setTextColor(Color.RED)
-                textSize = 16f
-                setPadding(50, 50, 50, 50)
-                setBackgroundColor(Color.BLACK)
-            })
         }
     }
 
-    private fun appendLog(msg: String) {
-        lifecycleScope.launch(Dispatchers.Main) {
-            logText.append("\n> $msg")
-            (logText.parent as? ScrollView)?.post { 
-                (logText.parent as ScrollView).fullScroll(View.FOCUS_DOWN) 
-            }
-        }
-    }
-
-    private fun createLabeledInput(container: LinearLayout, labelText: String, defValue: String): EditText {
-        val input = EditText(this).apply {
-            setText(defValue)
-            layoutParams = LinearLayout.LayoutParams(0, -2, 1f)
-            setTextColor(Color.WHITE)
-            setSingleLine(true)
-        }
-        
-        container.addView(LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            setPadding(0, 10, 0, 10)
-            addView(TextView(this@MainActivity).apply {
-                text = labelText
-                layoutParams = LinearLayout.LayoutParams(0, -2, 1f)
-                setTextColor(Color.LTGRAY)
-            })
-            addView(input)
-        })
-        return input
-    }
-
-    private fun createLayout(): View {
+    private fun setupDefaults() {
         val config = resources.configuration
         val exactDpi = resources.displayMetrics.densityDpi
         val detectedArch = android.os.Build.SUPPORTED_ABIS.firstOrNull() ?: "arm64-v8a"
@@ -127,92 +105,44 @@ class MainActivity : AppCompatActivity() {
             else -> "xxxhdpi" 
         }
 
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(30, 30, 30, 30)
-            setBackgroundColor(Color.parseColor("#121212"))
+        inputSmallestWidth.setText(config.smallestScreenWidthDp.toString())
+        inputMaxDimen.setText(maxOf(config.screenWidthDp, config.screenHeightDp).toString())
 
-            val configPanel = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL }
-            
-            // --- Engine Mode Selector ---
-            val modeGroup = RadioGroup(this@MainActivity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                layoutParams = LinearLayout.LayoutParams(0, -2, 1f)
-                
-                fastRadio = RadioButton(this@MainActivity).apply { 
-                    id = View.generateViewId() // CRITICAL FIX: RadioGroup needs unique IDs to work!
-                    text = "Fast"
-                    setTextColor(Color.WHITE)
-                    isChecked = true 
-                }
-                
-                val stableRadio = RadioButton(this@MainActivity).apply { 
-                    id = View.generateViewId() // CRITICAL FIX
-                    text = "Stable"
-                    setTextColor(Color.WHITE) 
-                }
-                
-                addView(fastRadio)
-                addView(stableRadio)
+        val dpiOptions = arrayOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")
+        val dpiAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, dpiOptions)
+        inputTargetDpi.adapter = dpiAdapter
+        inputTargetDpi.setSelection(dpiOptions.indexOf(detectedDpi).coerceAtLeast(0))
+
+        val archOptions = arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        val archAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, archOptions)
+        inputCpuArch.adapter = archAdapter
+        inputCpuArch.setSelection(archOptions.indexOf(detectedArch).coerceAtLeast(0))
+    }
+
+    private fun appendLog(msg: String) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            logText.append("\n> $msg")
+            (logText.parent as? ScrollView)?.post { 
+                (logText.parent as ScrollView).fullScroll(View.FOCUS_DOWN) 
             }
-            
-            configPanel.addView(LinearLayout(this@MainActivity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                setPadding(0, 10, 0, 10)
-                addView(TextView(this@MainActivity).apply {
-                    text = "Engine Mode:"
-                    layoutParams = LinearLayout.LayoutParams(0, -2, 1f)
-                    setTextColor(Color.LTGRAY)
-                })
-                addView(modeGroup)
-            })
-
-            swInput = createLabeledInput(configPanel, "Max SW (dp):", config.smallestScreenWidthDp.toString())
-            dimInput = createLabeledInput(configPanel, "Max Height/Width:", maxOf(config.screenWidthDp, config.screenHeightDp).toString())
-            dpiInput = createLabeledInput(configPanel, "Target DPI:", detectedDpi)
-            archInput = createLabeledInput(configPanel, "Target CPU Arch:", detectedArch)
-            langInput = createLabeledInput(configPanel, "Keep Langs (comma sep):", "")
-            
-            addView(configPanel)
-
-            pickApkButton = Button(this@MainActivity).apply { text = "Pick APK to Optimize" }
-            addView(pickApkButton)
-
-            statusText = TextView(this@MainActivity).apply { 
-                text = "Status: Idle" 
-                textSize = 16f
-                setPadding(0, 20, 0, 20)
-                setTextColor(Color.WHITE)
-            }
-            addView(statusText)
-
-            addView(ScrollView(this@MainActivity).apply {
-                layoutParams = LinearLayout.LayoutParams(-1, 0, 1f)
-                setBackgroundColor(Color.BLACK)
-                logText = TextView(this@MainActivity).apply {
-                    setTextColor(Color.GREEN)
-                    typeface = Typeface.MONOSPACE
-                    textSize = 11f
-                    setPadding(10, 10, 10, 10)
-                }
-                addView(logText)
-            })
-
-            saveButton = Button(this@MainActivity).apply { text = "Save Optimized APK"; isEnabled = false }
-            addView(saveButton)
         }
     }
 
     private fun handleApkUri(uri: Uri) {
+        val keepLocalesStr = inputKeepLocales.text?.toString() ?: ""
+        
+        val mode = if (engineModeGroup.checkedRadioButtonId == R.id.btnFastMode) OptimizationMode.FAST else OptimizationMode.STABLE
+
         val optConfig = OptimizationConfig(
-            maxSwDp = swInput.text.toString().toIntOrNull() ?: 400,
-            maxDimensionDp = dimInput.text.toString().toIntOrNull() ?: 800,
-            keepLangs = langInput.text.toString().split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet(),
-            targetArch = archInput.text.toString().trim(),
-            targetDpi = dpiInput.text.toString().trim(),
-            mode = if (fastRadio.isChecked) OptimizationMode.FAST else OptimizationMode.STABLE
+            maxSwDp = inputSmallestWidth.text?.toString()?.toIntOrNull() ?: 400,
+            maxDimensionDp = inputMaxDimen.text?.toString()?.toIntOrNull() ?: 800,
+            keepLangs = keepLocalesStr.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet(),
+            targetArch = inputCpuArch.selectedItem?.toString()?.trim() ?: "arm64-v8a",
+            targetDpi = inputTargetDpi.selectedItem?.toString()?.trim() ?: "xxhdpi",
+            mode = mode
         )
 
+        logText.text = "Starting optimization..."
         appendLog("Selected URI: $uri")
         appendLog("Engine: ${optConfig.mode} | Arch: ${optConfig.targetArch} | DPI: ${optConfig.targetDpi}")
         
@@ -252,7 +182,7 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 appendLog("Error: ${e.message}")
                 withContext(Dispatchers.Main) {
-                    statusText.text = "Error"
+                    statusText.text = "Status: Error"
                     pickApkButton.isEnabled = true
                 }
             }
@@ -267,7 +197,7 @@ class MainActivity : AppCompatActivity() {
                     fileToSave.inputStream().use { it.copyTo(output) }
                 }
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Saved!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Saved successfully!", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 appendLog("Save failed: ${e.message}")
