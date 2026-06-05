@@ -1,9 +1,7 @@
 package com.example
 
-import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -13,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,15 +34,15 @@ data class OptimizationConfig(
 
 class MainActivity : AppCompatActivity() {
 
+    // Views
     private lateinit var statusText: TextView
     private lateinit var logText: TextView
     private lateinit var pickApkButton: MaterialButton
     private lateinit var saveButton: MaterialButton
-
     private lateinit var inputSmallestWidth: TextInputEditText
     private lateinit var inputMaxDimen: TextInputEditText
-    private lateinit var inputTargetDpi: Spinner
-    private lateinit var inputCpuArch: Spinner
+    private lateinit var inputTargetDpi: AutoCompleteTextView
+    private lateinit var inputCpuArch: AutoCompleteTextView
     private lateinit var inputKeepLocales: TextInputEditText
     private lateinit var engineModeGroup: RadioGroup
 
@@ -59,131 +58,143 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+        setupCrashHandler()
+        DynamicColors.applyToActivityIfAvailable(this)
+
+        try {
+            setContentView(R.layout.activity_main)
+            initViews()
+            setupDefaults()
+            setupListeners()
+        } catch (e: Throwable) {
+            Log.e("OptimumCrash", "Fatal error during onCreate", e)
+            Toast.makeText(this, "Startup Crash: ${e.javaClass.simpleName}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun setupCrashHandler() {
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             Log.e("OptimumCrash", "Uncaught exception", throwable)
             defaultHandler?.uncaughtException(thread, throwable)
         }
+    }
 
-        try {
-            setContentView(R.layout.activity_main)
-            
-            // Find Views
-            statusText = findViewById(R.id.tvStatus)
-            logText = findViewById(R.id.tvLogs)
-            pickApkButton = findViewById(R.id.btnImportApk)
-            saveButton = findViewById(R.id.btnExportApk)
-            inputSmallestWidth = findViewById(R.id.inputSmallestWidth)
-            inputMaxDimen = findViewById(R.id.inputMaxDimen)
-            inputTargetDpi = findViewById(R.id.inputTargetDpi)
-            inputCpuArch = findViewById(R.id.inputCpuArch)
-            inputKeepLocales = findViewById(R.id.inputKeepLocales)
-            engineModeGroup = findViewById(R.id.engineModeGroup)
+    private fun initViews() {
+        statusText = findViewById(R.id.tvStatus)
+        logText = findViewById(R.id.tvLogs)
+        pickApkButton = findViewById(R.id.btnImportApk)
+        saveButton = findViewById(R.id.btnExportApk)
+        inputSmallestWidth = findViewById(R.id.inputSmallestWidth)
+        inputMaxDimen = findViewById(R.id.inputMaxDimen)
+        inputTargetDpi = findViewById(R.id.inputTargetDpi)
+        inputCpuArch = findViewById(R.id.inputCpuArch)
+        inputKeepLocales = findViewById(R.id.inputKeepLocales)
+        engineModeGroup = findViewById(R.id.engineModeGroup)
+    }
 
-            setupDefaults()
-
-            pickApkButton.setOnClickListener { apkPicker.launch("*/*") }
-            saveButton.setOnClickListener { saveLauncher.launch("optimized_app.apk") }
-        } catch (e: Throwable) {
-            Log.e("OptimumCrash", "Fatal error during onCreate", e)
-            val msg = "Startup Crash: ${e.javaClass.simpleName} - ${e.message}"
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-        }
+    private fun setupListeners() {
+        pickApkButton.setOnClickListener { apkPicker.launch("*/*") }
+        saveButton.setOnClickListener { saveLauncher.launch("optimized_app.apk") }
     }
 
     private fun setupDefaults() {
         val config = resources.configuration
-        val exactDpi = resources.displayMetrics.densityDpi
-        val detectedArch = android.os.Build.SUPPORTED_ABIS.firstOrNull() ?: "arm64-v8a"
-        val detectedDpi = when {
-            exactDpi <= 120 -> "ldpi"
-            exactDpi <= 160 -> "mdpi"
-            exactDpi <= 240 -> "hdpi"
-            exactDpi <= 320 -> "xhdpi"
-            exactDpi <= 480 -> "xxhdpi"
-            else -> "xxxhdpi" 
-        }
-
+        val density = resources.displayMetrics.densityDpi
+        
         inputSmallestWidth.setText(config.smallestScreenWidthDp.toString())
         inputMaxDimen.setText(maxOf(config.screenWidthDp, config.screenHeightDp).toString())
 
-        val dpiOptions = arrayOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")
-        val dpiAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, dpiOptions)
-        inputTargetDpi.adapter = dpiAdapter
-        inputTargetDpi.setSelection(dpiOptions.indexOf(detectedDpi).coerceAtLeast(0))
+        val detectedArch = Build.SUPPORTED_ABIS.firstOrNull() ?: "arm64-v8a"
+        val detectedDpi = when {
+            density <= 120 -> "ldpi"
+            density <= 160 -> "mdpi"
+            density <= 240 -> "hdpi"
+            density <= 320 -> "xhdpi"
+            density <= 480 -> "xxhdpi"
+            else -> "xxxhdpi"
+        }
 
-        val archOptions = arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-        val archAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, archOptions)
-        inputCpuArch.adapter = archAdapter
-        inputCpuArch.setSelection(archOptions.indexOf(detectedArch).coerceAtLeast(0))
+        setupDropdown(inputTargetDpi, arrayOf("ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"), detectedDpi)
+        setupDropdown(inputCpuArch, arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"), detectedArch)
+    }
+
+    private fun setupDropdown(view: AutoCompleteTextView, options: Array<String>, defaultOption: String) {
+        view.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, options))
+        view.setText(defaultOption, false)
+    }
+
+    private fun buildConfig(): OptimizationConfig {
+        val mode = if (engineModeGroup.checkedRadioButtonId == R.id.btnFastMode) OptimizationMode.FAST else OptimizationMode.STABLE
+        val locales = inputKeepLocales.text?.toString().orEmpty()
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .toSet()
+
+        return OptimizationConfig(
+            maxSwDp = inputSmallestWidth.text?.toString()?.toIntOrNull() ?: 400,
+            maxDimensionDp = inputMaxDimen.text?.toString()?.toIntOrNull() ?: 800,
+            keepLangs = locales,
+            targetArch = inputCpuArch.text?.toString()?.trim() ?: "arm64-v8a",
+            targetDpi = inputTargetDpi.text?.toString()?.trim() ?: "xxhdpi",
+            mode = mode
+        )
+    }
+
+    private fun setProcessingState(isProcessing: Boolean, isSuccess: Boolean = false) {
+        pickApkButton.isEnabled = !isProcessing
+        saveButton.isEnabled = !isProcessing && isSuccess
+        if (isProcessing) statusText.text = "Processing..."
     }
 
     private fun appendLog(msg: String) {
         lifecycleScope.launch(Dispatchers.Main) {
             logText.append("\n> $msg")
-            (logText.parent as? ScrollView)?.post { 
-                (logText.parent as ScrollView).fullScroll(View.FOCUS_DOWN) 
+            (logText.parent as? ScrollView)?.let { scroll ->
+                scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
             }
         }
     }
 
     private fun handleApkUri(uri: Uri) {
-        val keepLocalesStr = inputKeepLocales.text?.toString() ?: ""
-        
-        val mode = if (engineModeGroup.checkedRadioButtonId == R.id.btnFastMode) OptimizationMode.FAST else OptimizationMode.STABLE
-
-        val optConfig = OptimizationConfig(
-            maxSwDp = inputSmallestWidth.text?.toString()?.toIntOrNull() ?: 400,
-            maxDimensionDp = inputMaxDimen.text?.toString()?.toIntOrNull() ?: 800,
-            keepLangs = keepLocalesStr.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet(),
-            targetArch = inputCpuArch.selectedItem?.toString()?.trim() ?: "arm64-v8a",
-            targetDpi = inputTargetDpi.selectedItem?.toString()?.trim() ?: "xxhdpi",
-            mode = mode
-        )
+        val config = buildConfig()
 
         logText.text = "Starting optimization..."
         appendLog("Selected URI: $uri")
-        appendLog("Engine: ${optConfig.mode} | Arch: ${optConfig.targetArch} | DPI: ${optConfig.targetDpi}")
+        appendLog("Engine: ${config.mode} | Arch: ${config.targetArch} | DPI: ${config.targetDpi}")
         
-        statusText.text = "Processing..."
-        pickApkButton.isEnabled = false
-        saveButton.isEnabled = false
+        setProcessingState(isProcessing = true)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val inputFile = File(cacheDir, "input_raw.apk")
-            val output = File(cacheDir, "output_optimized.apk")
-
             try {
-                inputFile.delete()
-                output.delete()
-
-                contentResolver.openInputStream(uri)?.use { input ->
-                    inputFile.outputStream().use { input.copyTo(it) }
+                val inputFile = File(cacheDir, "input_raw.apk").apply { 
+                    delete()
+                    contentResolver.openInputStream(uri)?.use { input -> outputStream().use { input.copyTo(it) } }
                 }
+                val outputFile = File(cacheDir, "output_optimized.apk").apply { delete() }
 
                 val engine = OptimizationEngine { progress ->
                     appendLog(progress)
                     lifecycleScope.launch(Dispatchers.Main) { statusText.text = progress }
                 }
                 
-                val result = engine.runPipeline(inputFile, output, optConfig)
+                val result = engine.runPipeline(inputFile, outputFile, config)
 
                 withContext(Dispatchers.Main) {
                     if (result.isSuccess) {
-                        optimizedFile = output
+                        optimizedFile = outputFile
                         statusText.text = "Success!"
-                        saveButton.isEnabled = true
                     } else {
                         statusText.text = "Failed"
                     }
-                    pickApkButton.isEnabled = true
+                    setProcessingState(isProcessing = false, isSuccess = result.isSuccess)
                 }
             } catch (e: Exception) {
                 appendLog("Error: ${e.message}")
                 withContext(Dispatchers.Main) {
                     statusText.text = "Status: Error"
-                    pickApkButton.isEnabled = true
+                    setProcessingState(isProcessing = false)
                 }
             }
         }

@@ -9,7 +9,6 @@
     android:background="?android:colorBackground"
     tools:context=".MainActivity">
 
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
@@ -18,55 +17,61 @@
         android:gravity="center_vertical"
         android:background="?android:colorBackground">
         
-        <FrameLayout
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.IconButton.Filled"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/rounded_corner_primary"
-            android:layout_marginEnd="12dp">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:src="@android:drawable/ic_menu_preferences"
-                app:tint="?attr/colorOnPrimary" />
-        </FrameLayout>
+            android:insetLeft="0.0dip"
+            android:insetRight="0.0dip"
+            android:insetTop="0.0dip"
+            android:insetBottom="0.0dip"
+            android:layout_marginEnd="12.0dip"
+            app:cornerRadius="12.0dip"
+            app:iconPadding="0.0dip"
+            app:iconGravity="textStart"
+            app:icon="@android:drawable/ic_menu_preferences"
+            app:iconTint="?attr/colorOnPrimary"
+            app:backgroundTint="?attr/colorPrimary" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginStart="4dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="APK Optimizer"
-                android:textSize="18sp"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnBackground" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="MATERIAL 3 UTILITY"
-                android:textSize="11sp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textStyle="bold"
                 android:textAllCaps="true"
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
         
-        <FrameLayout
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/circle_surface_variant">
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:src="@android:drawable/ic_menu_manage"
-                app:tint="?attr/colorOnSurfaceVariant" />
-        </FrameLayout>
+            android:insetLeft="0.0dip"
+            android:insetRight="0.0dip"
+            android:insetTop="0.0dip"
+            android:insetBottom="0.0dip"
+            app:iconPadding="0.0dip"
+            app:iconGravity="textStart"
+            app:icon="@android:drawable/ic_menu_manage"
+            app:iconTint="?attr/colorOnSurfaceVariant"
+            app:backgroundTint="?attr/colorSurfaceVariant" />
     </LinearLayout>
     
-    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutline" />
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -80,34 +85,39 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Success banner -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/rounded_container_primary"
-                android:padding="12dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
                 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@android:drawable/ic_dialog_info"
-                    app:tint="?attr/colorPrimary"
-                    android:layout_marginEnd="8dp" />
-                
-                <TextView
-                    android:id="@+id/tvStatus"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Device configurations auto-detected successfully."
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnPrimaryContainer" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@android:drawable/ic_dialog_info"
+                        app:tint="?attr/colorPrimary"
+                        android:layout_marginEnd="8dp" />
+                    
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Device configurations auto-detected successfully."
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnPrimaryContainer" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Grid Settings -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -125,22 +135,33 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="SMALLEST WIDTH"
-                        android:textSize="11sp"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"
                         android:textStyle="bold"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:layout_marginStart="4dp"
                         android:layout_marginBottom="4dp" />
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/inputSmallestWidth"
+                    
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/input_bg"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="8dp"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnBackground"
-                        android:inputType="number" />
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
+                        app:suffixText="dp"
+                        app:suffixTextColor="?attr/colorOnSurfaceVariant"
+                        app:suffixTextAppearance="?attr/textAppearanceLabelMedium">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/inputSmallestWidth"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxLength="4"
+                            android:minEms="3"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textStyle="bold"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -153,24 +174,34 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="MAX DIMEN"
-                        android:textSize="11sp"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"
                         android:textStyle="bold"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:layout_marginStart="4dp"
                         android:layout_marginBottom="4dp" />
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/inputMaxDimen"
+                    
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/input_bg"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="8dp"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnBackground"
-                        android:inputType="number" />
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
+                        app:suffixText="dp"
+                        app:suffixTextColor="?attr/colorOnSurfaceVariant"
+                        app:suffixTextAppearance="?attr/textAppearanceLabelMedium">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/inputMaxDimen"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxLength="4"
+                            android:minEms="3"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textStyle="bold"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
-
             </LinearLayout>
 
             <LinearLayout
@@ -190,19 +221,27 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="TARGET DPI"
-                        android:textSize="11sp"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"
                         android:textStyle="bold"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:layout_marginStart="4dp"
                         android:layout_marginBottom="4dp" />
                     
-                    <Spinner
-                        android:id="@+id/inputTargetDpi"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:background="@drawable/input_bg"
-                        android:paddingHorizontal="12dp"
-                        style="@style/Widget.AppCompat.Spinner" />
+                        android:layout_height="wrap_content"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp">
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                            android:id="@+id/inputTargetDpi"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:textAppearance="?attr/textAppearanceBodyLarge" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -215,24 +254,30 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="CPU ARCH"
-                        android:textSize="11sp"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"
                         android:textStyle="bold"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:layout_marginStart="4dp"
                         android:layout_marginBottom="4dp" />
                     
-                    <Spinner
-                        android:id="@+id/inputCpuArch"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:background="@drawable/input_bg"
-                        android:paddingHorizontal="12dp"
-                        style="@style/Widget.AppCompat.Spinner" />
+                        android:layout_height="wrap_content"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp">
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                            android:id="@+id/inputCpuArch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:textAppearance="?attr/textAppearanceBodyLarge" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Keep Locales -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -241,92 +286,106 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="KEEP LOCALES (COMMA SEPARATED)"
-                    android:textSize="11sp"
+                    android:text="KEEP LOCALES"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginStart="4dp"
                     android:layout_marginBottom="4dp" />
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inputKeepLocales"
+                
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/input_bg"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnBackground"
-                    android:inputType="text" />
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:hintEnabled="false">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputKeepLocales"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textStyle="bold"
+                        android:inputType="text" 
+                        android:hint="e.g. en, bn, fr" />
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <!-- Engine Mode -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/rounded_surface_variant"
-                android:padding="16dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
-
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+                
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Engine Mode"
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Stable mode uses verification checks"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
+
+                    <RadioGroup
+                        android:id="@+id/engineModeGroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Engine Mode"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnBackground" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Stable mode uses verification checks"
-                        android:textSize="12sp"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:background="@drawable/pill_bg"
+                        android:padding="4dp"
+                        android:orientation="horizontal">
+    
+                        <RadioButton
+                            android:id="@+id/btnFastMode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:button="@null"
+                            android:background="@drawable/engine_radio_selector"
+                            android:text="Fast"
+                            android:textColor="@color/engine_text_selector"
+                            android:textAppearance="?attr/textAppearanceLabelMedium"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="16dp"
+                            android:gravity="center"
+                            android:checked="true" />
+        
+                        <RadioButton
+                            android:id="@+id/btnStableMode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:button="@null"
+                            android:background="@drawable/engine_radio_selector"
+                            android:text="Stable"
+                            android:textColor="@color/engine_text_selector"
+                            android:textAppearance="?attr/textAppearanceLabelMedium"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="16dp"
+                            android:gravity="center" />
+                    </RadioGroup>
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <RadioGroup
-                    android:id="@+id/engineModeGroup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/pill_bg"
-                    android:padding="4dp"
-                    android:orientation="horizontal">
-                    <RadioButton
-                        android:id="@+id/btnFastMode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:button="@null"
-                        android:background="@drawable/engine_radio_selector"
-                        android:text="Fast"
-                        android:textColor="@color/engine_text_selector"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center"
-                        android:checked="true" />
-                    <RadioButton
-                        android:id="@+id/btnStableMode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:button="@null"
-                        android:background="@drawable/engine_radio_selector"
-                        android:text="Stable"
-                        android:textColor="@color/engine_text_selector"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center" />
-                </RadioGroup>
-
-            </LinearLayout>
-
-            <!-- Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -334,33 +393,25 @@
                 android:layout_marginBottom="16dp">
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnImportApk"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="64dp"
                     android:layout_weight="1"
-                    app:backgroundTint="?attr/colorPrimaryContainer"
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:textStyle="bold"
-                    android:textAllCaps="false"
                     android:text="Import APK"
-                    android:layout_marginEnd="6dp"
-                    app:cornerRadius="16dp" />
+                    android:layout_marginEnd="6dp" />
+                    
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnExportApk"
+                    style="@style/Widget.Material3.Button"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="64dp"
                     android:layout_weight="1"
-                    app:backgroundTint="?attr/colorPrimary"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textStyle="bold"
-                    android:textAllCaps="false"
-                    android:text="Optimize"
-                    android:layout_marginStart="6dp"
-                    app:cornerRadius="16dp" />
+                    android:text="Save APK"
+                    android:layout_marginStart="6dp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <!-- Pipeline View -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="180dp"
@@ -368,7 +419,7 @@
         android:background="?attr/colorSurface"
         android:elevation="8dp">
 
-        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutline" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -379,23 +430,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PIPELINE PROCESS"
-                android:textSize="12sp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:layout_centerVertical="true" />
             
-            <TextView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="LIVE"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:textColor="#15803d"
-                android:background="@drawable/pill_live"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true" />
+                android:layout_centerVertical="true"
+                app:cardBackgroundColor="#e6f4ea"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LIVE"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textStyle="bold"
+                    android:textColor="#15803d"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp" />
+            </com.google.android.material.card.MaterialCardView>
         </RelativeLayout>
 
         <ScrollView
@@ -410,12 +468,12 @@
                 android:paddingHorizontal="16dp"
                 android:paddingBottom="16dp"
                 android:text="Waiting for user input..."
-                android:textColor="?attr/colorOnBackground"
+                android:textColor="?attr/colorOnSurface"
                 android:fontFamily="monospace"
-                android:textSize="12sp" />
+                android:textAppearance="?attr/textAppearanceBodySmall" />
         </ScrollView>
         
-        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutline" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" />
         
         <RelativeLayout
             android:layout_width="match_parent"
@@ -429,17 +487,20 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
-                <View
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="8dp"
                     android:layout_height="8dp"
-                    android:background="@drawable/circle_primary"
+                    app:cardBackgroundColor="?attr/colorPrimary"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
                     android:layout_marginEnd="6dp" />
                 <TextView
                     android:id="@+id/tvArchStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ARM64-V8A ACTIVE"
-                    android:textSize="10sp"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
@@ -448,10 +509,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="v1.0 stable_build"
-                android:textSize="10sp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:layout_alignParentEnd="true" />
         </RelativeLayout>
     </LinearLayout>
-
 </LinearLayout>

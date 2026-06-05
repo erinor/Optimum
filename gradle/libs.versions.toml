@@ -6,7 +6,7 @@ appcompat = "1.6.1"
 activity = "1.10.1"
 lifecycle = "2.8.7"
 kotlinxCoroutines = "1.10.2"
-material = "1.10.0"
+material = "1.14.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -15,7 +15,6 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
-# Coroutines (Parallel Processing for ApkOptimizer)
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 

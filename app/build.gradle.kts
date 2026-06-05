@@ -12,14 +12,16 @@ android {
     targetSdk = 36
     versionCode = 1
     versionName = "1.0"
+    resourceConfigurations += setOf("en")
   }
 
   buildTypes {
     release {
       isCrunchPngs = false
-      isMinifyEnabled = false
-      isShrinkResources = false
+      isMinifyEnabled = true
+      isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      vcsInfo.include = false
     }
     debug {
       signingConfig = null
@@ -33,6 +35,7 @@ android {
         resources {
             excludes += setOf(
                 "META-INF/*.version",
+                "LICENSE*",
                 "/*.properties"
             )
         }

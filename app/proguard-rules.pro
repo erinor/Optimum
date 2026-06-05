@@ -19,3 +19,23 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#    Uncomment these in case of AbstractMethodError
+
+# 1. Protect ARSCLib Core
+#-keep class com.reandroid.** { *; }
+#-keepclassmembers class com.reandroid.** { *; }
+#-keep interface com.reandroid.** { *; }
+#-keep enum com.reandroid.** { *; }
+#-dontwarn com.reandroid.**
+
+# 2. Protect the sneaky bundled Android Classes
+-keep class android.content.res.XmlResourceParser { *; }
+-keep class android.util.AttributeSet { *; }
+#-dontwarn android.content.res.XmlResourceParser
+#-dontwarn android.util.AttributeSet
+
+# 3. Protect XML Pull parsers bundled in the library
+-keep class org.xmlpull.** { *; }
+#-keepclassmembers class org.xmlpull.** { *; }
+#-dontwarn org.xmlpull.**

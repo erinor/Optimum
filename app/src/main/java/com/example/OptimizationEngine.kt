@@ -19,13 +19,13 @@ class OptimizationEngine(
                     onProgress("Stage 1/3: Loading APK into RAM...")
                     val apkModule = ApkModule.loadApkFile(inputFile)
 
-                    onProgress("Stage 2/3: Surgically removing bloat from ARSC & ZIP (Fast Mode)...")
+                    onProgress("Stage 2/3: Surgically removing bloat (Fast Mode)...")
                     ApkOptimizerRam.optimizeModule(apkModule, config)
 
                     onProgress("Stage 3/3: Recompiling optimized APK...")
                     apkModule.writeApk(outputFile)
 
-                    onProgress("Optimization Successful! (Ready for ZipAlign & Sign)")
+                    onProgress("Optimization Successful!")
                     true
 
                 } else {
@@ -73,7 +73,7 @@ class OptimizationEngine(
                         onProgress("Stage 4/4: Writing optimized APK...")
                         encoder.apkModule.writeApk(outputFile)
 
-                        onProgress("Optimization Successful! (Ready for ZipAlign & Sign)")
+                        onProgress("Optimization Successful!")
                         true
                     } finally {
                         if (tempWorkDir.exists()) {
